@@ -1,8 +1,8 @@
 #!/bin/sh
 set -ex
 yum install -y jq qemu-img
-#To use this script, target vm must be powered on.
-#variables to be specified
+
+#config
 OUTPUT_DIR=/path/to/output
 VM_NAME=targetVmName
 VM_IP=targetVmIP
@@ -10,8 +10,9 @@ ESX_HOST=ESXiIP
 VCENTER_HOST=YourVcenterHostIP
 VCENTER_USERNAME=YourVcenterUsername
 VCENTER_PASSWORD=YourVcenterPassword
-#you must escape special character by using % followed by its ASCII hex value
 VCENTER_PASSWORD_ASCII=EscapedPassword
+
+#query vm info from vCenter
 AUTH_HEADER=$(echo -n $VCENTER_USERNAME:$VCENTER_PASSWORD | base64)
 KERNEL_VERSION=$(ssh root@${VM_IP} "grep -o 'vmlinuz\\S*' /proc/cmdline | sed s/vmlinuz-//")
 EXTRA=$(ssh root@${VM_IP} cat /proc/cmdline)
@@ -65,8 +66,8 @@ echo 'kernel = "'${OUTPUT_DIR}'/vmlinuz-'${KERNEL_VERSION}'"' >> ${OUTPUT_DIR}/$
 echo 'ramdisk = "'${OUTPUT_DIR}'/initramfs-'${KERNEL_VERSION}'.img"' >> ${OUTPUT_DIR}/${VM_NAME}.cfg
 echo 'extra = "'${EXTRA}'"' >> ${OUTPUT_DIR}/${VM_NAME}.cfg
 echo 'name = "'${VM_NAME}'"' >> ${OUTPUT_DIR}/${VM_NAME}.cfg
-echo "memory = 4096" >> ${OUTPUT_DIR}/${VM_NAME}.cfg
-echo "vcpu = 4" >> ${OUTPUT_DIR}/${VM_NAME}.cfg
+echo "memory = ${MEM_SIZE}" >> ${OUTPUT_DIR}/${VM_NAME}.cfg
+echo "vcpu = ${NCPU}" >> ${OUTPUT_DIR}/${VM_NAME}.cfg
 echo "vif = ['mac=${MAC_ADDR},bridge=brvif1.4']" >> ${OUTPUT_DIR}/${VM_NAME}.cfg
 echo "disk = [" >> ${OUTPUT_DIR}/${VM_NAME}.cfg
 cd ${OUTPUT_DIR}
