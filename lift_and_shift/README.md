@@ -10,5 +10,6 @@ Before running lift_and_shift.sh on Xen host VM, the following preparations are 
 5. The destination VM must have Xen-blanket installed. For more details about how to install Xen-blanket, please refer to [this project](https://github.com/Exotanium/Xen-Blanket-NG).
 
 ## Getting started
-Specify the information about the target and destination VM in config section of the script, then run the following command on the destination VM.
+Specify the information about the target and destination VM in config section of the script, then run the following command on the destination VM.  
+
 ```./lift_and_shift.sh```
