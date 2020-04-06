@@ -11,4 +11,4 @@ Before running lift_and_shift.sh on Xen host VM, the following preparations are 
 
 ## Getting started
 Specify the information about the target and destination VM in config section of the script, then run the following command on the destination VM.
-`./lift_and_shift.sh`
+```./lift_and_shift.sh```
