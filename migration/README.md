@@ -14,8 +14,8 @@ The following preparations are needed for running the scripts.
 
 ### Setup xen-blanket and basic network on other nodes:
 1. Download the code to the VM, specify your configuration for each xen-blanket node in config.sh. 
-2. Make sure that you are using unique IPSUFFIX for each node, and guest_mtu must be the same across the whole cluster. Otherwise they will have trouble communicating with each other.
-3. "platform" in config.sh specifies what driver we are going to install. Usually "xen" is for AWS and "kvm" for Google.
+2. Make sure that you are using unique IPSUFFIX for each node, and guest_mtu must be the same across the whole cluster. Otherwise they will have trouble communicating with each other. "platform" in config.sh specifies what driver we are going to install. Usually "xen" is for AWS and "kvm" for Google.
+3. Run setup_xenblanket_2.sh.
 4. Once xen-blanket works, run setup_xenblanket_2.sh.
 
 ### Connect all nodes into the basic network:
