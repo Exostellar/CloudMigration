@@ -1,0 +1,11 @@
+[Unit]
+Description=initiate migration network
+After=network.target
+
+[Service]
+Type=simple
+ExecStart=/etc/custom_init.sh
+TimeoutStartSec=0
+
+[Install]
+WantedBy=default.target

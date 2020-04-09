@@ -25,7 +25,12 @@ The following preparations are needed for running the scripts.
 3. Then on controller, run "python build_network.py". It will login to each node and setup the tunnels. 
     
 ### Add customized init script
-If you want the network setup to work on boot in the future, you could add sample.service to /etc/systemd/system.
+If you want the network setup to work on boot in the future, you could add sample.service to /etc/systemd/system. And then run
+```
+# systemctl daemon-reload
+# systemctl enable sample.service
+# systemctl start sample.service
+```
 
 ### Configurate IP for Dom U
 You need to configurate static IP for guest vms on xen-blanket. Here is a sample for CentOS.
