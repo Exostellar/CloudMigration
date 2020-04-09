@@ -1,39 +1,44 @@
 # Migration
 Migration tool sets up Xen-blanket and the necessary network which would enable live VM migration between nodes across private and public clouds as well as across different public cloud providers.
 
-## Preparation
+## Requirements
 The following preparations are needed for running the scripts.
-1. The Xen-blanket in this project only supports CentOS7, hence it is necessary that you have CentOS7 environment for the first layer VM.
-2. SELinux must be disabled;
-3. Make sure to open udp port 655, it is needed for setting up vpn tunnels.
+* The setup scripts in this folder are only tested on CentOS-7, hence it is necessary that you first-layer VMs use CentOS-7;
+* SELinux must be disabled;
+* Make sure to open UDP port 655 for your VMs. It is needed for setting up VPN tunnels. On Amazon EC2, you need to configure security groups. On Google Compute Engine, you need to change the firewall rules for the network interface.
+* For the scripts of setting up VXLAN tunnels to work, you should download this repository to the same location across all your first-layer VMs. 
+* The VPN created by these scripts uses static IP within `192.168.1.0/24`. Make sure that it does not conflict with your existing setup.
 
 ## Getting started
-### Setup a controller
-1. Download the code to the controller, specify your configuration for the controller in config.sh. Make sure that IPSUFFIX=1.
-2. Then run setup_controller.sh.
+The following steps are assuming that you are running the commands as the `root` user.
 
-### Setup xen-blanket and basic network on other nodes:
-1. Download the code to the VM, specify your configuration for each xen-blanket node in config.sh. 
-2. Make sure that you are using unique IPSUFFIX for each node, and guest_mtu must be the same across the whole cluster. Otherwise they will have trouble communicating with each other. "platform" in config.sh specifies what driver we are going to install. Usually "xen" is for AWS and "kvm" for Google.
-3. Run setup_xenblanket_1.sh. Then reboot.
-4. Once xen-blanket works, run setup_xenblanket_2.sh.
+### 1. Update `config.sh`:
+1. `TEMP`: The folder for putting temporal files.
+2. `IPSUFFIX`: Each first-layer VM should get an unique `IPSUFFIX`, which implies an unique VPN IP address.
+3. `guest_mtu`: MTU to use for the VPN.
 
-### Connect all nodes into the basic network:
-    
-1. Propagate the controller's public key to all nodes(including itself), so that it can login to every node with the root account. Some nodes might disable root access. You should enable it if you want to use the following scripts.
+### 2. Setup Xen-Blanket:
+Run `setup_xenblanket.sh`. If successful, it will print out "All completed. Check grub before reboot!". Reboot the VM after verifying that the Grub has been updated to boot with the Xen hypervisor.
+
+### 3. Setup Open-vSwitch:
+Run `setup_ovs.sh`. If successful, it will print out "ALL FINISHED."
+
+### 4. Setup VXLAN tunnels: 
+After you have finished the previous steps on all the VMs you want to connect with a VPN, choose one of them as the controller to run the following scripts. You only need to run this script once on the controller.
+
+1. Propagate the controller's public key to all nodes(including itself), so that it can login to every node using the root account without a password. Some VMs might disable root access. You should enable it if you want to use the following scripts.
 2. On controller, modify network.conf. Follow the comment and examples there.
-3. Then on controller, run "python build_network.py". It will login to each node and setup the tunnels. 
+3. On controller, run "python build_network.py". It will login to each node and setup the tunnels. 
     
-### Add customized init script
-If you want the network setup to work on boot in the future, you could add sample.service to /etc/systemd/system. And then run
+### 5. Bridging to the physical network:
+If you want to bridge the VPN to the physical network, you can just attach the physical NIC to the `brvif1.4` bridge created by the script:
+
 ```
-# systemctl daemon-reload
-# systemctl enable sample.service
-# systemctl start sample.service
+ovs-vsctl add-port brvif1.4 eth0
 ```
 
-### Configurate IP for Dom U
-You need to configurate static IP for guest vms on xen-blanket. Here is a sample for CentOS.
+### 6. Configurate IP for Dom U
+You need to configurate static IP for guest VMs on Xen-Blanket, and use the DOM-0 IP as the gateway. Here is a sample for CentOS.
 
 ```
 #/etc/sysconfig/network-scripts/ifcfg-eth0
@@ -41,7 +46,7 @@ TYPE=Ethernet
 BOOTPROTO=static
 DEFROUTE=yes
 IPV4_FAILURE_FATAL=no
-IPADDR=192.168.10.111
+IPADDR=192.168.1.111
 NETMASK=255.255.255.0
 GATEWAY=192.168.1.11
 NAME=eth0

@@ -22,7 +22,7 @@ for index, bridge in enumerate(bridges):
     
     cmd = "ovs-ofctl del-flows %s" % (tunnel_name)
     os.system(cmd)
-    os.system("echo \'%s\' > /etc/custom_init.sh" % (cmd))   
+    os.system("echo \'%s\' >> /etc/custom_init.sh" % (cmd))   
  
     cmd = "ovs-ofctl add-flow %s \"table=0, priority=0, actions=drop\"" % (tunnel_name)
     os.system(cmd)

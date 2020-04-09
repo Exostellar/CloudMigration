@@ -24,5 +24,5 @@ for id, private_ip, public_ip, data_center in config:
             tunnel_config += "%s %s\n" % (m_id, m_private_ip)
         else:
             tunnel_config += "%s %s\n" % (m_id, m_public_ip)
-    os.system("source ./config.sh; ssh -i %s %s \"echo '%s' > /$BASE/tunnels.txt\"" % (private_key, public_ip, tunnel_config))
-    os.system("source ./config.sh; ssh -i %s %s \"cd $BASE; python set_tunnels.py %s tunnels.txt\"" % (private_key, public_ip, private_ip))
+    os.system("source ./config.sh; ssh -i %s root@%s \"echo '%s' > /$BASE/tunnels.txt\"" % (private_key, public_ip, tunnel_config))
+    os.system("source ./config.sh; ssh -i %s root@%s \"cd $BASE; python set_tunnels.py %s tunnels.txt\"" % (private_key, public_ip, private_ip))
