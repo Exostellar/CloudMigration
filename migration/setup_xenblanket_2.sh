@@ -25,8 +25,8 @@ systemctl enable openvswitch.service
 sed -c -i "s/vif-bridge/vif-openvswitch/" /etc/xen/xl.conf
 sed -c -i "s/#vif\.default\.script/vif\.default\.script/" /etc/xen/xl.conf
 
-systemctl stop firewalld
-systemctl disable firewalld
+#systemctl stop firewalld
+#systemctl disable firewalld
 yum install -y iptables-services
 yum install nfs-utils -y
 
@@ -44,6 +44,7 @@ iptables --table nat -I POSTROUTING --out-interface eth0 -j MASQUERADE
 iptables -I FORWARD --in-interface brvif1.4 -j ACCEPT
 iptables -I FORWARD -o brvif1.4 -m state --state RELATED,ESTABLISHED -j ACCEPT
 iptables -I INPUT -s 192.168.1.0/24 -j ACCEPT
+iptables -I INPUT -s 172.31.0.0/16 -j ACCEPT
 
 echo 1 > /proc/sys/net/ipv4/ip_forward
 echo "net.ipv4.ip_forward = 1" >> /etc/sysctl.conf

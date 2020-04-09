@@ -49,6 +49,8 @@ python build_bridges.py
 
 echo "ifconfig brvif1.4 192.168.1.$IPSUFFIX netmask 255.255.255.0 mtu $guest_mtu up" >> /etc/custom_init.sh
 
+iptables -I INPUT -s 172.31.0.0/16 -j ACCEPT
+service iptables save
 
 #iptables -I INPUT --in-interface brvif1.4 -j ACCEPT
 #service iptables save
