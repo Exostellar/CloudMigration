@@ -53,8 +53,8 @@ sed -c -i "s/#vif\.default\.script/vif\.default\.script/" /etc/xen/xl.conf
 
 
 sed -i 's/GRUB_DEFAULT.*/GRUB_DEFAULT\=\"CentOS Linux\, with Xen hypervisor\"/' /etc/default/grub
-echo 'GRUB_CMDLINE_XEN_DEFAULT="dom0_max_vcpus=4 dom0_mem=4096M,max:4096M dom0_vcpus_pin=true"' >> /etc/default/grub
-echo 'GRUB_CMDLINE_LINUX_XEN_REPLACE_DEFAULT="console=hvc0 earlyprintk=xen nomodeset"' >>/etc/default/grub
+echo "GRUB_CMDLINE_XEN_DEFAULT=\"dom0_max_vcpus=$dom0_cpu dom0_mem=${dom0_mem}M,max:${dom0_mem}M dom0_vcpus_pin=true\"" >> /etc/default/grub
+echo "GRUB_CMDLINE_LINUX_XEN_REPLACE_DEFAULT=\"console=hvc0 earlyprintk=xen nomodeset\"" >>/etc/default/grub
 grub2-mkconfig -o /boot/grub2/grub.cfg
 
 systemctl enable xen-qemu-dom0-disk-backend.service

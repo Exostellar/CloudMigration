@@ -16,6 +16,8 @@ The following steps are assuming that you are running the commands as the `root`
 1. `TEMP`: The folder for putting temporal files.
 2. `IPSUFFIX`: Each first-layer VM should get an unique `IPSUFFIX`, which implies an unique VPN IP address.
 3. `guest_mtu`: MTU to use for the VPN.
+4. `dom0_cpu`: Number of virtual CPUs allocated for Dom-0. Only used when you are installing Xen-Blanket. This should be equal or less than the number of CPUs available. If you have many available CPUs, setting a smaller number (i.e., 4) can improve performance in many cases.
+5. `dom0_mem`: Memory (in MB) reserved for Dom-0. Only used when you are installing Xen-Blanket. You should reserve at least 2GB for Dom-0. But don't reserve too much since you need memory for guest VMs.
 
 ### 2. Setup Xen-Blanket:
 This step can be skipped if you just want to join the VPN (e.g., as the dedicated NFS server for supporting live VM migration).
