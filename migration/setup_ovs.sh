@@ -35,7 +35,9 @@ ifconfig xenbr0 192.168.1.$IPSUFFIX netmask 255.255.255.0 mtu $guest_mtu up
 
 cd $BASE
 python build_bridges.py
+ifconfig tunnel0 mtu 65535 up
 echo "ifconfig xenbr0 192.168.1.$IPSUFFIX netmask 255.255.255.0 mtu $guest_mtu up" >> /etc/custom_init.sh
+echo "ifconfig tunnel0 mtu 65535 up" >> /etc/custom_init.sh
 
 #NAT server for guest VMs
 systemctl stop firewalld || true
