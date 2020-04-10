@@ -23,9 +23,11 @@ systemctl start openvswitch.service
 systemctl enable openvswitch.service
 
 #Enable OVS support in Xen
-sed -c -i "s/vif-bridge/vif-openvswitch/" /etc/xen/xl.conf
-sed -c -i "s/#vif\.default\.script/vif\.default\.script/" /etc/xen/xl.conf
-/usr/bin/cp -f $BASE/vif-openvswitch /etc/xen/scripts/
+if [ -d "/etc/xen" ]; then
+    sed -c -i "s/vif-bridge/vif-openvswitch/" /etc/xen/xl.conf
+    sed -c -i "s/#vif\.default\.script/vif\.default\.script/" /etc/xen/xl.conf
+    /usr/bin/cp -f $BASE/vif-openvswitch /etc/xen/scripts/
+fi
 
 #Install customized init script
 /usr/bin/cp -f $BASE/custom_init.service /etc/systemd/system
@@ -35,12 +37,12 @@ echo "#!/bin/bash" > /etc/custom_init.sh
 chmod a+x /etc/custom_init.sh
 
 #Create bridges
-ovs-vsctl add-br brvif1.4
-ifconfig brvif1.4 192.168.1.$IPSUFFIX netmask 255.255.255.0 mtu $guest_mtu up
+ovs-vsctl add-br xenbr0
+ifconfig xenbr0 192.168.1.$IPSUFFIX netmask 255.255.255.0 mtu $guest_mtu up
 
 cd $BASE
 python build_bridges.py
-echo "ifconfig brvif1.4 192.168.1.$IPSUFFIX netmask 255.255.255.0 mtu $guest_mtu up" >> /etc/custom_init.sh
+echo "ifconfig xenbr0 192.168.1.$IPSUFFIX netmask 255.255.255.0 mtu $guest_mtu up" >> /etc/custom_init.sh
 
 #NAT server for guest VMs
 systemctl stop firewalld || true
@@ -51,8 +53,8 @@ systemctl enable iptables
 
 main_dev=`ip route show | grep 'default' | awk '{print $5}'`
 iptables --table nat -I POSTROUTING --out-interface $main_dev -j MASQUERADE
-iptables -I FORWARD --in-interface brvif1.4 -j ACCEPT
-iptables -I FORWARD -o brvif1.4 -m state --state RELATED,ESTABLISHED -j ACCEPT
+iptables -I FORWARD --in-interface xenbr0 -j ACCEPT
+iptables -I FORWARD -o xenbr0 -m state --state RELATED,ESTABLISHED -j ACCEPT
 iptables -I INPUT -s 192.168.1.0/24 -j ACCEPT
 iptables -I INPUT -p udp --dport 655 -j ACCEPT
 
@@ -62,7 +64,7 @@ sysctl -p /etc/sysctl.conf
 
 service iptables save
 
-#Install NFS support 
+#Install NFS support
 yum install nfs-utils -y
 
 echo "ALL FINISHED."
