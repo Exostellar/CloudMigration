@@ -46,6 +46,12 @@ make install-tools install-xen
 echo "/usr/local/lib" >> /etc/ld.so.conf
 ldconfig
 
+#Enable OVS support in Xen
+sed -c -i "s/vif-bridge/vif-openvswitch/" /etc/xen/xl.conf
+sed -c -i "s/#vif\.default\.script/vif\.default\.script/" /etc/xen/xl.conf
+/usr/bin/cp -f $BASE/vif-openvswitch /etc/xen/scripts/
+
+
 sed -i 's/GRUB_DEFAULT.*/GRUB_DEFAULT\=\"CentOS Linux\, with Xen hypervisor\"/' /etc/default/grub
 echo 'GRUB_CMDLINE_XEN_DEFAULT="dom0_max_vcpus=4 dom0_mem=4096M,max:4096M dom0_vcpus_pin=true"' >> /etc/default/grub
 echo 'GRUB_CMDLINE_LINUX_XEN_REPLACE_DEFAULT="console=hvc0 earlyprintk=xen nomodeset"' >>/etc/default/grub

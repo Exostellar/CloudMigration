@@ -22,13 +22,6 @@ rpm -i openvswitch-2.5.9-1.el7.x86_64.rpm
 systemctl start openvswitch.service
 systemctl enable openvswitch.service
 
-#Enable OVS support in Xen
-if [ -d "/etc/xen" ]; then
-    sed -c -i "s/vif-bridge/vif-openvswitch/" /etc/xen/xl.conf
-    sed -c -i "s/#vif\.default\.script/vif\.default\.script/" /etc/xen/xl.conf
-    /usr/bin/cp -f $BASE/vif-openvswitch /etc/xen/scripts/
-fi
-
 #Install customized init script
 /usr/bin/cp -f $BASE/custom_init.service /etc/systemd/system
 systemctl daemon-reload
