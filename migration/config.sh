@@ -2,13 +2,10 @@ BASE="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd -P )"
 
 TEMP="/root/workspace"   #recommend 10GB free in this directory
 
-IPSUFFIX=14   #controller is fixed to 1
-host_mtu=1500
+IPSUFFIX=14   #VPN IP address: 192.168.1.$IPSUFFIX
+
 guest_mtu=1360   #typically host_mtu-100
 
-######1. required for setting up controller######
-NFS_ROOT="/root/nfsroot"
-
-######2. required for setting up xen-blanket######
-HOSTNAME=vx1 #assign a hostname for host to be setup
-platform=xen    #xen/kvm/hyperv
+#Only used for Xen-Blanket setup:
+dom0_cpu=4      #number of v-cpus for dom0
+dom0_mem=4096   #memory size for dom0, in MB
